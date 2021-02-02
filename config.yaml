@@ -1,0 +1,8 @@
+start-after: 0s
+interval: 10s
+rules:    # 对 prometheus api 的 query
+    - tag: tps
+      promql: sum(rate(tidb_session_transaction_duration_seconds_count[1m])) > bool 2/3 * sum(rate(tidb_session_transaction_duration_seconds_count[5m]))
+metrics-to-show:
+  tps_1m: sum(rate(tidb_session_transaction_duration_seconds_count[1m]))
+  tps_10m: sum(rate(tidb_session_transaction_duration_seconds_count[10m]))
