@@ -1,4 +1,4 @@
-module ofey404/metrics-checker
+module github.com/PingCAP-QE/metrics-checker
 
 go 1.15
 
