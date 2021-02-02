@@ -1,4 +1,4 @@
-package main
+package metric
 
 type Rule struct {
 	Tag    string `yaml:"tag"`

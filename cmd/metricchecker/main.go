@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v2"
+
+	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
 )
 
 var (
@@ -21,7 +23,7 @@ type Config struct {
 	startTime     time.Time
 	StartAfter    time.Duration
 	Interval      time.Duration
-	Rules         []Rule
+	Rules         []metric.Rule
 	MetricsToShow map[string]string
 }
 
@@ -29,7 +31,7 @@ func (r *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var tmp struct {
 		StartAfter    string            `yaml:"start-after,omitempty"`
 		Interval      string            `yaml:"interval,omitempty"`
-		Rules         []Rule            `yaml:"rules"`
+		Rules         []metric.Rule     `yaml:"rules"`
 		MetricsToShow map[string]string `yaml:"metrics-to-show"`
 	}
 	if err := unmarshal(&tmp); err != nil {

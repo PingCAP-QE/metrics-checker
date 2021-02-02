@@ -8,6 +8,8 @@ import (
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/spf13/cobra"
+
+	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
 )
 
 var rootCmd = &cobra.Command{
@@ -16,11 +18,11 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		InitConfig(configFilePath, configBase64)
 
-		address = AddHTTPIfIP(address)
+		address = metric.AddHTTPIfIP(address)
 		if grafanaAPIURL != "" {
 			dashboardName := "Metrics Checker"
-			grafanaAPIURL = AddHTTPIfIP(grafanaAPIURL)
-			err := createMetricsDashboard(grafanaAPIURL, dashboardName, config.MetricsToShow)
+			grafanaAPIURL = metric.AddHTTPIfIP(grafanaAPIURL)
+			err := metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, config.MetricsToShow)
 			if err != nil {
 				log.Fatalf("Create grafana metrics error: %s", err)
 			}
@@ -46,7 +48,7 @@ var rootCmd = &cobra.Command{
 		for {
 			// run rules
 			for _, rule := range config.Rules {
-				if !Check(api, rule.PromQL, time.Now()) {
+				if !metric.Check(api, rule.PromQL, time.Now()) {
 					log.Fatalf("Rule %s failed.", rule)
 				}
 			}
@@ -55,6 +57,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Execute ...
 func Execute() {
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.PersistentFlags().StringVarP(&address, "address", "u", "http://127.0.0.1:9090", "Host and port of prometheus")
