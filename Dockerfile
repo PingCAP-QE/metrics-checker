@@ -14,4 +14,4 @@ FROM alpine:3.8
 RUN apk update && apk upgrade && \
     apk add --no-cache bash curl wget
 
-COPY --from=0 /src/metrics-checker /bin/
+COPY --from=0 /src/bin/metrics-checker /bin/
