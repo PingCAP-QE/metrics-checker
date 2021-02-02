@@ -6,7 +6,7 @@ PACKAGE_DIRECTORIES := $(PACKAGES) | sed 's|github.com/PingCAP-QE/metrics-checke
 default: metrics-checker
 
 clean:
-	rm -f metrics-checker
+	rm -rf bin/
 
 metrics-checker:
 	go build -o bin/metric-checker cmd/metricchecker/*.go
