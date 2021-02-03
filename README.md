@@ -12,7 +12,7 @@ rules:
         # They should return a bool value.
 ```
 
-Minimum config file.
+Minimum config file. More config examples are in directory [config_examples](config_examples/).
 - Place it in [./config.yaml](./config.yaml), or `--config {filepath}`.
 - Pass it with `--config-base64` flag. This will override the former method.
 

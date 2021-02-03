@@ -1,13 +1,13 @@
 # Note of Development
 
 ## TODO
-- [ ] Provide some example config file:
+- [x] Provide some example config file:
   - [x] TPS and latency.
-  - [ ] Check deadlock of tidb.
+  - [x] Check deadlock of tidb.
     - Via heartbeat of tikvs.
-  - [ ] Check region health of tidb.
+  - [x] Check region health of tidb.
     - Via extra peer / miss peer.
-  - [ ] Check panic of tidb via logs.
+- [ ] Check panic of tidb via logs.
 
 From codes:
 ```
