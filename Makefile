@@ -9,7 +9,7 @@ clean:
 	rm -rf bin/
 
 metrics-checker:
-	go build -o bin/metric-checker cmd/metricchecker/*.go
+	go build -o bin/metrics-checker cmd/metricchecker/*.go
 
 groupimports: install-goimports
 	goimports -w -l -local github.com/PingCAP-QE/metrics-checker $$($(PACKAGE_DIRECTORIES))
