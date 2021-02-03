@@ -39,7 +39,8 @@ $ ./metrics-checker --address 127.0.0.1:9090 --grafana 127.0.0.1:3000
 ```
 ![Grafana Dashboard](doc/assets/grafana-metrics-checker.png)
 
-## Example of config file
+## Examples of config file
+Examples are in [config_examples](config_examples/) directory.
 ```yaml
 start-after: 30s  # optional, default = 0s
 interval: 10s     # optional, default = 1m

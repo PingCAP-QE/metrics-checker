@@ -1,18 +1,20 @@
 # Note of Development
 
 ## TODO
-- [ ] Check region health of tidb.
-    - [ ] Extra peer / miss peer
-    - [ ] Maybe make a collection of some example config.yaml?
-- [ ] Check panic of tidb via logs.
-- [ ] Check deadlock of tidb.
+- [ ] Provide some example config file:
+  - [x] TPS and latency.
+  - [ ] Check deadlock of tidb.
+    - Via heartbeat of tikvs.
+  - [ ] Check region health of tidb.
+    - Via extra peer / miss peer.
+  - [ ] Check panic of tidb via logs.
 
 From codes:
 ```
-/home/ofey/Code/PingCAP-Internship/metrics-checker/cmd/metricchecker/main.go
+/metrics-checker/cmd/metricchecker/main.go
   41,5: 	// TODO: Set some default value of config file here.
 
-/home/ofey/Code/PingCAP-Internship/metrics-checker/pkg/metric/prometheus.go
+/metrics-checker/pkg/metric/prometheus.go
   25,6: 		// TODO: When Prometheus doesn't up, the length of boolVector would be zero.
   28,7: 			// TODO: During startup of prometheus, query would return a zero-length
 ```
