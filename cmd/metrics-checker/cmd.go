@@ -39,7 +39,7 @@ var rootCmd = &cobra.Command{
 			config.Rules[i].AlertFunc = AlertFunction
 		}
 
-		metricsChecker, err := metrics.NewMetricsChecker(prometheusAPIURL, config.Rules, config.Interval)
+		metricsChecker, err := metrics.NewChecker(prometheusAPIURL, config.Rules, config.Interval)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

@@ -8,21 +8,21 @@ import (
 )
 
 // MetricsChecker checks Rules with given Interval.
-type MetricsChecker struct {
+type Checker struct {
 	API      v1.API
 	Interval time.Duration
 	Rules    []Rule
 }
 
-// NewMetricsChecker creates a new instance of MetricsChecker.
-func NewMetricsChecker(promAddress string, rules []Rule, interval time.Duration) (*MetricsChecker, error) {
+// NewChecker creates a new instance of MetricsChecker.
+func NewChecker(promAddress string, rules []Rule, interval time.Duration) (*Checker, error) {
 	client, err := api.NewClient(api.Config{
 		Address: promAddress,
 	})
 	if err != nil {
 		return nil, err
 	}
-	m := &MetricsChecker{
+	m := &Checker{
 		API:      v1.NewAPI(client),
 		Rules:    rules,
 		Interval: interval,
@@ -35,7 +35,7 @@ func NewMetricsChecker(promAddress string, rules []Rule, interval time.Duration)
 // 		 Ref: https://github.com/prometheus/prometheus/blob/19c190b406c992278aaade63be92ecc7bb6a4921/rules/manager.go#L910
 
 // CheckGiven checks whether a given promQL returns true or not.
-func (m *MetricsChecker) CheckGiven(promQL string) (bool, error) {
+func (m *Checker) CheckGiven(promQL string) (bool, error) {
 	ans, err := Check(m.API, promQL, time.Now())
 	if err != nil {
 		return false, err
@@ -47,7 +47,7 @@ func (m *MetricsChecker) CheckGiven(promQL string) (bool, error) {
 }
 
 // Run starts processing of the MetricsChecker. It is blocking.
-func (m *MetricsChecker) Run() error {
+func (m *Checker) Run() error {
 	for {
 		for _, rule := range m.Rules {
 			ans, err := m.CheckGiven(rule.PromQL)
