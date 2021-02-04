@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
+	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
 var rootCmd = &cobra.Command{
@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		InitConfig(configFilePath, configBase64)
 
-		reformedAddress, err := metric.AddHTTPIfIP(address)
+		reformedAddress, err := metrics.AddHTTPIfIP(address)
 		if err != nil {
 			log.Fatal("Prometheus address invalid", zap.String("address", address))
 		}
@@ -27,7 +27,7 @@ var rootCmd = &cobra.Command{
 		if grafanaAPIURL != "" {
 			dashboardName := "Metrics Checker"
 
-			reformedGrafanaURL, err := metric.AddHTTPIfIP(grafanaAPIURL)
+			reformedGrafanaURL, err := metrics.AddHTTPIfIP(grafanaAPIURL)
 			if err != nil {
 				log.Fatal("Grafana address invalid", zap.String("grafana", grafanaAPIURL))
 			}
@@ -36,7 +36,7 @@ var rootCmd = &cobra.Command{
 			if grafanaDataSource == "" {
 				log.Fatal("Grafana datasource is not set.")
 			}
-			err = metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, grafanaDataSource, config.MetricsToShow)
+			err = metrics.CreateMetricsDashboard(grafanaAPIURL, dashboardName, grafanaDataSource, config.MetricsToShow)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -54,7 +54,7 @@ var rootCmd = &cobra.Command{
 			config.Rules[i].AlertFunc = AlertFunction
 		}
 
-		metricsChecker, err := metric.NewMetricsChecker(address, config.Rules, config.Interval)
+		metricsChecker, err := metrics.NewMetricsChecker(address, config.Rules, config.Interval)
 		if err != nil {
 			log.Fatal(err.Error())
 		}

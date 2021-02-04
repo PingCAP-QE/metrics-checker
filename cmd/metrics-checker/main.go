@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 
-	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
+	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
 var (
@@ -25,15 +25,15 @@ type Config struct {
 	startTime     time.Time
 	StartAfter    time.Duration
 	Interval      time.Duration
-	Rules         []metric.Rule
+	Rules         []metrics.Rule
 	MetricsToShow map[string]string
 }
 
-func AlertFunction(rule metric.Rule) {
+func AlertFunction(rule metrics.Rule) {
 	log.Fatal("Rule failed", zap.String("rule", rule.String()))
 }
 
-func NofityFunction(rule metric.Rule) {
+func NofityFunction(rule metrics.Rule) {
 	log.Info("Rule passed", zap.String("rule", rule.String()))
 }
 
@@ -41,7 +41,7 @@ func (r *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var tmp struct {
 		StartAfter    string            `yaml:"start-after,omitempty"`
 		Interval      string            `yaml:"interval,omitempty"`
-		Rules         []metric.Rule     `yaml:"rules"`
+		Rules         []metrics.Rule    `yaml:"rules"`
 		MetricsToShow map[string]string `yaml:"metrics-to-show"`
 	}
 	if err := unmarshal(&tmp); err != nil {
