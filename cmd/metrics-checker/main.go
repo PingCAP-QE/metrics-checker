@@ -31,10 +31,12 @@ type Config struct {
 	MetricsToShow map[string]string
 }
 
+// AlertFunc do something when Rule failed.
 func AlertFunction(rule metrics.Rule) {
 	log.Fatal("Rule failed", zap.String("rule", rule.String()))
 }
 
+// NotifyFunc do something when Rule succeeded.
 func NotifyFunction(rule metrics.Rule) {
 	log.Info("Rule passed", zap.String("rule", rule.String()))
 }
@@ -88,23 +90,29 @@ func LoadConfigFromBytes(b []byte) Config {
 	return config
 }
 
-func InitConfig(configFilePath string, configBase64 string) {
+// TODO: There must be some better way to do config initialization. Ref: https://www.bookstack.cn/read/cobra/spilt.2.spilt.4.README.md
+
+// InitConfig return a Config parsed from configBase64, if configBase64 is empty, load from configFilePath.
+func InitConfig(configFilePath string, configBase64 string) Config {
+	var c Config
 	if configBase64 == "" {
-		config = LoadConfig(configFilePath)
+		c = LoadConfig(configFilePath)
 		log.Info("Load config from file", zap.String("file path", configFilePath))
 	} else {
 		configString, err := base64.StdEncoding.DecodeString(configBase64)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		config = LoadConfigFromBytes(configString)
+		c = LoadConfigFromBytes(configString)
 		log.Info("Load config from base64 string")
 	}
-	config.startTime = time.Now()
+	c.startTime = time.Now()
 
-	if len(config.Rules) == 0 {
+	if len(c.Rules) == 0 {
 		log.Fatal("Number of rules == 0")
 	}
+
+	return c
 }
 
 func CreateGrafanaDashboard() {

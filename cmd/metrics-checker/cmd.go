@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	Use:   "Metrics checker",
 	Short: "For checking prometheus metrics",
 	Run: func(cmd *cobra.Command, args []string) {
-		InitConfig(configFilePath, configBase64)
+		config := InitConfig(configFilePath, configBase64)
 
 		reformedAddress, err := metrics.AddHTTPIfIP(prometheusAPIURL)
 		if err != nil {
