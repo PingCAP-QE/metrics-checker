@@ -12,11 +12,12 @@ import (
 )
 
 var (
-	address        string
-	configFilePath string
-	configBase64   string
-	grafanaAPIURL  string
-	config         Config
+	address           string
+	configFilePath    string
+	configBase64      string
+	grafanaAPIURL     string
+	grafanaDataSource string
+	config            Config
 )
 
 type Config struct {

@@ -35,7 +35,10 @@ var rootCmd = &cobra.Command{
 			}
 			grafanaAPIURL = reformedGrafanaURL
 
-			err = metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, config.MetricsToShow)
+			if grafanaDataSource == "" {
+				log.Fatal("Grafana datasource is not set.")
+			}
+			err = metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, grafanaDataSource, config.MetricsToShow)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -81,6 +84,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringVarP(&configFilePath, "config", "c", "./config.yaml", "Set config file path, overrided by --config-base64")
 	rootCmd.PersistentFlags().StringVar(&configBase64, "config-base64", "", "Pass config file as base64 string, override --config")
 	rootCmd.PersistentFlags().StringVar(&grafanaAPIURL, "grafana", "", "Pass config file as base64 string, override --config")
+	rootCmd.PersistentFlags().StringVar(&grafanaDataSource, "grafana-datasource", "", "Datasource of grafana panels.")
 
 	if err := rootCmd.Execute(); err != nil {
 		rootCmd.Println(err)
