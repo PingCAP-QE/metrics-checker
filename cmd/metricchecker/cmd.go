@@ -1,9 +1,11 @@
 package main
 
 import (
-	"log"
 	"os"
 	"time"
+
+	"github.com/pingcap/log"
+	"go.uber.org/zap"
 
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
@@ -18,39 +20,54 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		InitConfig(configFilePath, configBase64)
 
-		address = metric.AddHTTPIfIP(address)
+		reformedAddress, err := metric.AddHTTPIfIP(address)
+		if err != nil {
+			log.Fatal("Prometheus address invalid", zap.String("address", address))
+		}
+		address = reformedAddress
+
 		if grafanaAPIURL != "" {
 			dashboardName := "Metrics Checker"
-			grafanaAPIURL = metric.AddHTTPIfIP(grafanaAPIURL)
-			err := metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, config.MetricsToShow)
+
+			reformedGrafanaURL, err := metric.AddHTTPIfIP(grafanaAPIURL)
 			if err != nil {
-				log.Fatalf("Create grafana metrics error: %s", err)
+				log.Fatal("Grafana address invalid", zap.String("grafana", grafanaAPIURL))
 			}
-			log.Printf("Created dashboard %s on %s", dashboardName, grafanaAPIURL)
+			grafanaAPIURL = reformedGrafanaURL
+
+			err = metric.CreateMetricsDashboard(grafanaAPIURL, dashboardName, config.MetricsToShow)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			log.Info("Created dashboard", zap.String("name", dashboardName), zap.String("grafana url", grafanaAPIURL))
 		}
 
-		log.Printf("Start checking metrics after %s", config.StartAfter)
+		log.Info("Waiting for checking metrics", zap.Duration("start after", config.StartAfter))
 		for time.Now().Before(config.startTime.Add(config.StartAfter)) {
 			time.Sleep(time.Second)
 		}
-		log.Printf("Start checking metrics")
-		log.Printf("Prometheus address: %s", address)
+		log.Info("Start checking metrics", zap.String("prometheus address", address))
 
 		// Create prometheus API
 		client, err := api.NewClient(api.Config{
 			Address: address,
 		})
 		if err != nil {
-			log.Fatalf("Create prometheus api failed. address: %s, error: %s", address, err)
+			log.Fatal(err.Error())
 		}
 		api := v1.NewAPI(client)
 
 		for {
 			// run rules
 			for _, rule := range config.Rules {
-				if !metric.Check(api, rule.PromQL, time.Now()) {
-					log.Fatalf("Rule %s failed.", rule)
+				ans, err := metric.Check(api, rule.PromQL, time.Now())
+				if err != nil {
+					log.Warn(err.Error())
 				}
+				if ans == false {
+					log.Fatal("Rule failed", zap.String("rule", rule.String()))
+				}
+				log.Info("Rule passed", zap.String("rule", rule.String()))
 			}
 			time.Sleep(config.Interval)
 		}

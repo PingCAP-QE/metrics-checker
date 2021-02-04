@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/grafana-tools/sdk v0.0.0-20210127134634-c831d821bb8a
+	github.com/pingcap/log v0.0.0-20201112100606-8f1e84a3abc8 // indirect
 	github.com/prometheus/client_golang v1.9.0
 	github.com/prometheus/common v0.15.0
 	github.com/spf13/cobra v1.1.1
