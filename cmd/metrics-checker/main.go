@@ -12,8 +12,9 @@ import (
 	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
+// Variables which are passed in by flags.
 var (
-	address           string
+	prometheusAPIURL  string
 	configFilePath    string
 	configBase64      string
 	grafanaAPIURL     string
@@ -21,6 +22,7 @@ var (
 	config            Config
 )
 
+// Config represents information from config file.
 type Config struct {
 	startTime     time.Time
 	StartAfter    time.Duration
@@ -33,7 +35,7 @@ func AlertFunction(rule metrics.Rule) {
 	log.Fatal("Rule failed", zap.String("rule", rule.String()))
 }
 
-func NofityFunction(rule metrics.Rule) {
+func NotifyFunction(rule metrics.Rule) {
 	log.Info("Rule passed", zap.String("rule", rule.String()))
 }
 
@@ -103,6 +105,25 @@ func InitConfig(configFilePath string, configBase64 string) {
 	if len(config.Rules) == 0 {
 		log.Fatal("Number of rules == 0")
 	}
+}
+
+func CreateGrafanaDashboard() {
+	dashboardName := "Metrics Checker"
+
+	reformedGrafanaURL, err := metrics.AddHTTPIfIP(grafanaAPIURL)
+	if err != nil {
+		log.Fatal("Grafana prometheusAPIURL invalid", zap.String("grafana", grafanaAPIURL))
+	}
+	grafanaAPIURL = reformedGrafanaURL
+
+	if grafanaDataSource == "" {
+		log.Fatal("Grafana datasource is not set.")
+	}
+	err = metrics.CreateMetricsDashboard(grafanaAPIURL, dashboardName, grafanaDataSource, config.MetricsToShow)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Info("Created dashboard", zap.String("name", dashboardName), zap.String("grafana", grafanaAPIURL))
 }
 
 func main() {
