@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/base64"
 	"io/ioutil"
-	"log"
 	"time"
 
+	"github.com/pingcap/log"
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 
 	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
@@ -26,6 +27,14 @@ type Config struct {
 	Interval      time.Duration
 	Rules         []metric.Rule
 	MetricsToShow map[string]string
+}
+
+func AlertFunction(rule metric.Rule) {
+	log.Fatal("Rule failed", zap.String("rule", rule.String()))
+}
+
+func NofityFunction(rule metric.Rule) {
+	log.Info("Rule passed", zap.String("rule", rule.String()))
 }
 
 func (r *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -55,7 +64,7 @@ func ParseDurationWithDefault(s string, fallback time.Duration) time.Duration {
 	}
 	d, err := time.ParseDuration(s)
 	if err != nil {
-		log.Fatalf("failed to parse '%s' to time.Duration: %v", s, err)
+		log.Fatal(err.Error())
 	}
 	return d
 }
@@ -63,7 +72,7 @@ func ParseDurationWithDefault(s string, fallback time.Duration) time.Duration {
 func LoadConfig(path string) Config {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatalf("Read config file %s error: %v", path, err)
+		log.Fatal(err.Error())
 	}
 	return LoadConfigFromBytes(file)
 }
@@ -72,7 +81,7 @@ func LoadConfigFromBytes(b []byte) Config {
 	config := Config{}
 	err := yaml.Unmarshal(b, &config)
 	if err != nil {
-		log.Fatalf("Load config error: %v", err)
+		log.Fatal(err.Error())
 	}
 	return config
 }
@@ -80,19 +89,19 @@ func LoadConfigFromBytes(b []byte) Config {
 func InitConfig(configFilePath string, configBase64 string) {
 	if configBase64 == "" {
 		config = LoadConfig(configFilePath)
-		log.Printf("Load config from file %s", configFilePath)
+		log.Info("Load config from file", zap.String("file path", configFilePath))
 	} else {
 		configString, err := base64.StdEncoding.DecodeString(configBase64)
 		if err != nil {
-			log.Fatalf("Base64 config decode error: %s", configBase64)
+			log.Fatal(err.Error())
 		}
 		config = LoadConfigFromBytes(configString)
-		log.Printf("Load config from base64 string")
+		log.Info("Load config from base64 string")
 	}
 	config.startTime = time.Now()
 
 	if len(config.Rules) == 0 {
-		log.Fatalf("Number of rules == 0")
+		log.Fatal("Number of rules == 0")
 	}
 }
 

@@ -7,8 +7,6 @@ import (
 	"github.com/pingcap/log"
 	"go.uber.org/zap"
 
-	"github.com/prometheus/client_golang/api"
-	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/spf13/cobra"
 
 	"github.com/PingCAP-QE/metrics-checker/pkg/metric"
@@ -51,28 +49,18 @@ var rootCmd = &cobra.Command{
 		}
 		log.Info("Start checking metrics", zap.String("prometheus address", address))
 
-		// Create prometheus API
-		client, err := api.NewClient(api.Config{
-			Address: address,
-		})
+		for i := range config.Rules {
+			config.Rules[i].NotifyFunc = NofityFunction
+			config.Rules[i].AlertFunc = AlertFunction
+		}
+
+		metricsChecker, err := metric.NewMetricsChecker(address, config.Rules, config.Interval)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		api := v1.NewAPI(client)
-
-		for {
-			// run rules
-			for _, rule := range config.Rules {
-				ans, err := metric.Check(api, rule.PromQL, time.Now())
-				if err != nil {
-					log.Warn(err.Error())
-				}
-				if ans == false {
-					log.Fatal("Rule failed", zap.String("rule", rule.String()))
-				}
-				log.Info("Rule passed", zap.String("rule", rule.String()))
-			}
-			time.Sleep(config.Interval)
+		err = metricsChecker.Run()
+		if err != nil {
+			log.Fatal("Metrics checker running error", zap.String("err", err.Error()))
 		}
 	},
 }
