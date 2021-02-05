@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"time"
 
@@ -19,7 +20,6 @@ var (
 	configBase64      string
 	grafanaAPIURL     string
 	grafanaDataSource string
-	config            Config
 )
 
 // Config represents information from config file.
@@ -115,7 +115,7 @@ func InitConfig(configFilePath string, configBase64 string) Config {
 	return c
 }
 
-func CreateGrafanaDashboard() {
+func CreateGrafanaDashboard(config Config) {
 	dashboardName := "Metrics Checker"
 
 	reformedGrafanaURL, err := metrics.AddHTTPIfIP(grafanaAPIURL)
@@ -128,6 +128,7 @@ func CreateGrafanaDashboard() {
 		log.Fatal("Grafana datasource is not set.")
 	}
 	err = metrics.CreateMetricsDashboard(grafanaAPIURL, dashboardName, grafanaDataSource, config.MetricsToShow)
+	fmt.Printf("MTS: %v\n", config.MetricsToShow)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
