@@ -1,4 +1,4 @@
-package metric
+package metrics
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/grafana-tools/sdk"
 )
 
-func CreateMetricsDashboard(apiURL, dashboardName string, metrics map[string]string) error {
+func CreateMetricsDashboard(apiURL, dashboardName string, datasource string, metrics map[string]string) error {
 	client := sdk.NewClient(apiURL, "admin:admin", http.DefaultClient)
 	ctx := context.Background()
 	boardFile, err := ioutil.ReadFile("templates/dashboard.json")
@@ -32,6 +32,7 @@ func CreateMetricsDashboard(apiURL, dashboardName string, metrics map[string]str
 		id++
 		panel.CommonPanel.Title = title
 		panel.GraphPanel.Targets[0].Expr = expr
+		panel.Datasource = &datasource
 		board.Panels = append(board.Panels, &panel)
 	}
 	_, err = client.SetDashboard(ctx, board, sdk.SetDashboardParams{
