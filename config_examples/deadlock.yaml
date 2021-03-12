@@ -1,0 +1,7 @@
+start-after: 0s
+interval: 10s
+rules:
+    - tag: no_heart_beat_after_10m  # Duration of any nemesis injected by tipocket is less than 5 minutes.
+      promql: min(sum(rate(pd_scheduler_region_heartbeat_latency_seconds_bucket[10m])) by (store)) == bool 0
+metrics-to-show:
+  average_heartbeat_latency: sum(rate(pd_scheduler_region_heartbeat_latency_seconds_bucket[10m])) by (store)

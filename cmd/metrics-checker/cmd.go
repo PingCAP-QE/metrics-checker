@@ -25,7 +25,7 @@ var rootCmd = &cobra.Command{
 		prometheusAPIURL = reformedAddress
 
 		if grafanaAPIURL != "" {
-			CreateGrafanaDashboard()
+			CreateGrafanaDashboard(config)
 		}
 
 		log.Info("Waiting for checking metrics", zap.Duration("start after", config.StartAfter))
