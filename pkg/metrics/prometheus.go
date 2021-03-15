@@ -19,16 +19,16 @@ func Check(client v1.API, query string, ts time.Time) (ans bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	if val.Type() == model.ValVector {
-		boolVector := val.(model.Vector)
-		if boolVector.Len() == 0 {
-			return false, errors.New("Prometheus is not up")
-		}
-		if boolVector[0].Value == 1 {
+	// Ref: https://github.com/prometheus/prometheus/blob/76750d2a96df54226e85ac272d7ad5a547630240/rules/manager.go#L186-L206
+	switch v := val.(type) {
+	case model.Vector:
+		if v.Len() > 0 {
 			return true, nil
 		}
+		return false, nil
+	default:
+		return false, errors.New("rule result is not a vector")
 	}
-	return false, errors.New("return type is not model.ValVector")
 }
 
 // AddHTTPIfIP add "http://" before ip address like 127.0.0.1 or 127.0.0.1:3000
