@@ -22,14 +22,11 @@ func Check(client v1.API, query string, ts time.Time) (ans bool, err error) {
 	// Ref: https://github.com/prometheus/prometheus/blob/76750d2a96df54226e85ac272d7ad5a547630240/rules/manager.go#L186-L206
 	switch v := val.(type) {
 	case model.Vector:
-		if v.Len() > 0 {
-			return true, nil
-		} else {
-		    return false, nil
-		}
-		return false, nil
+		return v.Len() > 0, nil
+	case *model.Scalar:
+		return v != nil, nil
 	default:
-		return false, errors.New("rule result is not a vector")
+		return false, errors.New("rule result is not a vector or scalar")
 	}
 }
 
