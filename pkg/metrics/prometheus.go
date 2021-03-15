@@ -26,6 +26,8 @@ func Check(client v1.API, query string, ts time.Time) (ans bool, err error) {
 		}
 		if boolVector[0].Value == 1 {
 			return true, nil
+		} else {
+		    return false, nil
 		}
 	}
 	return false, errors.New("return type is not model.ValVector")
