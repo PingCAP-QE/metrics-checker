@@ -7,7 +7,8 @@
     - Via heartbeat of tikvs.
   - [x] Check region health of tidb.
     - Via extra peer / miss peer.
-- [ ] Check panic of tidb via logs.
+- [ ] Update README for new features in [PR 5](https://github.com/PingCAP-QE/metrics-checker/pull/5).
+- [ ] Add debug feature `--start-before`
 
 From codes:
 ```
