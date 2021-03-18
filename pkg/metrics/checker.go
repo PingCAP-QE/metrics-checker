@@ -55,7 +55,7 @@ func (m *Checker) Run() error {
 				// TODO: I'm not sure whether Run() should return a error or not.
 				return err
 			}
-			if ans == false {
+			if ans == true {
 				// Alert function is required.
 				rule.AlertFunc(rule)
 			}
