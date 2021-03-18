@@ -33,7 +33,8 @@ type Config struct {
 
 // AlertFunc do something when Rule failed.
 func AlertFunction(rule metrics.Rule) {
-	log.Fatal("Rule failed", zap.String("rule", rule.String()))
+	log.Info("Rule triggered", zap.String("tag", rule.Tag), zap.String("promql", rule.PromQL))
+	log.Fatal("Quit metrics checker")
 }
 
 // NotifyFunc do something when Rule succeeded.
