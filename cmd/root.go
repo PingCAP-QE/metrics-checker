@@ -12,7 +12,6 @@ import (
 	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
-
 var rootCmd = &cobra.Command{
 	Use:   "Metrics checker",
 	Short: "For checking prometheus metrics",
@@ -61,7 +60,7 @@ func Execute() {
 }
 
 func init() {
-    cobra.OnInitialize(InitConfig)
+	cobra.OnInitialize(InitConfig)
 	rootCmd.SetOut(os.Stdout)
 
 	rootCmd.PersistentFlags().StringVarP(&Flag.prometheusAPIURL, "address", "u", "http://127.0.0.1:9090", "Host and port of prometheus")

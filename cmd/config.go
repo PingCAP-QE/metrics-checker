@@ -29,12 +29,11 @@ type Config struct {
 // FlagConfig is a struct of variables which are passed in by flags.
 type FlagConfig struct {
 	prometheusAPIURL  string
-    configFilePath string
-    configBase64 string
+	configFilePath    string
+	configBase64      string
 	grafanaAPIURL     string
 	grafanaDataSource string
 }
-
 
 func LoadConfig(path string) Config {
 	file, err := ioutil.ReadFile(path)
@@ -53,6 +52,7 @@ func LoadConfigFromBytes(b []byte) Config {
 	return config
 }
 
+// UnmarshalYAML parse `Config` struct from yaml, set some default values.
 func (r *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var tmp struct {
 		StartAfter    string            `yaml:"start-after,omitempty"`
@@ -64,15 +64,12 @@ func (r *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		return err
 	}
 
-	// TODO: Set some default value of config file here.
-	// 		 Maybe not a good practice. Change it in the future.
 	r.StartAfter = ParseDurationWithDefault(tmp.StartAfter, 0*time.Minute)
 	r.Interval = ParseDurationWithDefault(tmp.Interval, 1*time.Minute)
 	r.Rules = tmp.Rules
 	r.MetricsToShow = tmp.MetricsToShow
 	return nil
 }
-
 
 // InitConfig reads in config file from given/default place
 func InitConfig() {
