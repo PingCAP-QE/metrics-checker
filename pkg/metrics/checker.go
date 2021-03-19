@@ -34,7 +34,7 @@ func NewChecker(promAddress string, rules []Rule, interval time.Duration) (*Chec
 // 		 We use single-threaded code here, should improve it.
 // 		 Ref: https://github.com/prometheus/prometheus/blob/19c190b406c992278aaade63be92ecc7bb6a4921/rules/manager.go#L910
 
-// CheckGiven checks whether a given promQL returns true or not.
+// CheckGiven checks whether a given promQL Satisified.
 func (m *Checker) CheckGiven(promQL string) (bool, error) {
 	ans, err := Check(m.API, promQL, time.Now())
 	if err != nil {
