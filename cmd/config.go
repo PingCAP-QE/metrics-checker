@@ -87,6 +87,6 @@ func InitConfig() {
 	Conf.startTime = time.Now()
 
 	if len(Conf.Rules) == 0 {
-		log.Fatal("Number of rules == 0")
+		log.Fatal("Number of rules must not be 0")
 	}
 }
