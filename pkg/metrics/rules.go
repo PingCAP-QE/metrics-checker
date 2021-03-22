@@ -5,7 +5,7 @@ import (
 )
 
 // Rule represents a bool PromQL expression, returning True means rule satisified.
-//   Send alerts when a rule is satisfied, which is similarly as prometheus
+//   Send alerts when a rule return true, which is similarly as prometheus
 //   alerting rules.
 type Rule struct {
 	Tag        string `yaml:"tag"`
@@ -17,7 +17,7 @@ type Rule struct {
 // NotifyFunc do something when Rule is not satisified.
 type NotifyFunc func(rule Rule)
 
-// AlertFunc do something when Rule satisifile.
+// AlertFunc do something when Rule is satifified.
 type AlertFunc func(rule Rule)
 
 func (r *Rule) String() string {
