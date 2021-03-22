@@ -1,10 +1,10 @@
 start-after: 0s
 interval: 10s
 rules:
-    - tag: tps
-      promql: sum(rate(tidb_session_transaction_duration_seconds_count[1m])) > bool 2/3 * sum(rate(tidb_session_transaction_duration_seconds_count[5m]))
-    - tag: lat
-      promql: histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le)) < bool 100
+    - tag: "tps_degradation_more_than_30%"
+      promql: sum(rate(tidb_session_transaction_duration_seconds_count[1m])) < bool 2/3 * sum(rate(tidb_session_transaction_duration_seconds_count[5m]))
+    - tag: "lat_not_99%_request_within_100ms"
+      promql: histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le)) > bool 100
 metrics-to-show:
   tps_1m: sum(rate(tidb_session_transaction_duration_seconds_count[1m]))
   tps_10m: sum(rate(tidb_session_transaction_duration_seconds_count[10m]))

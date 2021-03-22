@@ -5,7 +5,7 @@
 start-after: 0s
 interval: 10s
 rules:
-    - tag: down_peer_less_than_30%
-      promql: sum(pd_regions_status{type="down-peer-region-count"}) < bool 0.3 * sum(pd_cluster_status{type="region_count"})
+    - tag: down_peer_more_than_30%
+      promql: sum(pd_regions_status{type="down-peer-region-count"}) > bool 0.3 * sum(pd_cluster_status{type="region_count"})
 metrics-to-show:
   average_heartbeat_latency: sum(rate(pd_scheduler_region_heartbeat_latency_seconds_bucket[10m])) by (store)

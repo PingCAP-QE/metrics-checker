@@ -1,0 +1,6 @@
+start-after: 0s
+interval: 10s
+rules:
+    - tag: uptime
+      promql: rate(process_start_time_seconds{tidb_cluster="", job="tikv"}[1m]) != 0
+
