@@ -14,10 +14,10 @@ type Rule struct {
 	AlertFunc  AlertFunc
 }
 
-// NotifyFunc do something when Rule is not satisified.
+// NotifyFunc do something when Rule failed.
 type NotifyFunc func(rule Rule)
 
-// AlertFunc do something when Rule is satifified.
+// AlertFunc do something when Rule satifified.
 type AlertFunc func(rule Rule)
 
 func (r *Rule) String() string {
