@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 	"github.com/pingcap/log"
 	"go.uber.org/zap"
+
+	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
 // AlertFunc do something when Rule failed.

@@ -5,10 +5,11 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 	"github.com/pingcap/log"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
+
+	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
 // Config is a global Config variable
