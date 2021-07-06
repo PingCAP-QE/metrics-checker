@@ -4,11 +4,13 @@ go 1.15
 
 require (
 	github.com/grafana-tools/sdk v0.0.0-20210127134634-c831d821bb8a
+	github.com/joho/godotenv v1.3.0
 	github.com/pingcap/log v0.0.0-20201112100606-8f1e84a3abc8
+	github.com/pingcap/test-infra/sdk v0.0.0-20210706055513-02c05c90a84e
 	github.com/prometheus/client_golang v1.9.0
 	github.com/prometheus/common v0.15.0
 	github.com/spf13/cobra v1.1.1
-	go.uber.org/zap v1.13.0
+	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
