@@ -10,16 +10,6 @@ import (
 	"github.com/PingCAP-QE/metrics-checker/pkg/metrics"
 )
 
-// AlertFunc do something when Rule failed.
-func AlertFunction(rule metrics.Rule) {
-	log.Fatal("Rule failed", zap.String("rule", rule.String()))
-}
-
-// NotifyFunc do something when Rule succeeded.
-func NotifyFunction(rule metrics.Rule) {
-	log.Info("Rule passed", zap.String("rule", rule.String()))
-}
-
 // ParseDurationWithDefault parse string `s` to duration, if s is an empty string, return `fallback`.
 func ParseDurationWithDefault(s string, fallback time.Duration) time.Duration {
 	if s == "" {

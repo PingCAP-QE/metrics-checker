@@ -5,19 +5,19 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pingcap/log"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"go.uber.org/zap"
 )
 
-// MetricsChecker checks Rules with given Interval.
+// Checker MetricsChecker checks Rules with given Interval.
 type Checker struct {
-	API      v1.API
-	Interval time.Duration
-	Rules    []Rule
+	API   v1.API
+	Rules []Rule
 }
 
-// NewChecker creates a new instance of MetricsChecker.
-func NewChecker(promAddress string, rules []Rule, interval time.Duration) (*Checker, error) {
+func NewChecker(promAddress string) (*Checker, error) {
 	client, err := api.NewClient(api.Config{
 		Address: promAddress,
 	})
@@ -25,11 +25,15 @@ func NewChecker(promAddress string, rules []Rule, interval time.Duration) (*Chec
 		return nil, err
 	}
 	m := &Checker{
-		API:      v1.NewAPI(client),
-		Rules:    rules,
-		Interval: interval,
+		API:   v1.NewAPI(client),
+		Rules: []Rule{},
 	}
 	return m, nil
+}
+
+func (m *Checker) AddRule(rule Rule) *Checker {
+	m.Rules = append(m.Rules, rule)
+	return m // return Checker itself enables the user to add rules as a chained method call, which will be more convenient
 }
 
 // CheckGiven checks whether a given promQL is satisfied.
@@ -44,24 +48,25 @@ func (m *Checker) CheckGiven(promQL string) (bool, error) {
 	return true, nil
 }
 
-// Run starts processing of the MetricsChecker.
+// RunBlocked starts processing of the MetricsChecker.
 //   It is blocking.
-//   If any rule returns an error, `Run` returns with this error,
+//   If any rule returns an error, `RunBlocked` returns with this error,
 //   stop all other rules immediately.
-func (m *Checker) Run() error {
+func (m *Checker) RunBlocked() error {
 	errChan := make(chan error)
 	ctx, cancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 
 	for _, rule := range m.Rules {
-		go func(rule Rule, interval time.Duration) {
+		go func(rule Rule) {
 			defer wg.Done()
 			wg.Add(1)
-			err := m.RunRule(ctx, rule, interval)
+			err := m.RunRule(ctx, rule, rule.Interval)
 			if err != nil {
 				errChan <- err
+				wg.Done()
 			}
-		}(rule, m.Interval)
+		}(rule)
 	}
 	err := <-errChan
 	// If an error occurs, try to shut down all goroutines.
@@ -83,14 +88,24 @@ func (m *Checker) RunRule(ctx context.Context, rule Rule, interval time.Duration
 			if err != nil {
 				return err
 			}
+			if rule.EvaluatedCallback != nil {
+				rule.EvaluatedCallback(rule)
+			}
 			if ans == true {
 				// Alert function is required.
-				rule.AlertFunc(rule)
-			}
-			if rule.NotifyFunc != nil {
-				rule.NotifyFunc(rule)
+				rule.AlertCallback(rule)
 			}
 			time.Sleep(interval)
 		}
 	}
+}
+
+// DefaultAlertCallback do something when Rule failed.
+func DefaultAlertCallback(rule Rule) {
+	log.Fatal("Rule failed", zap.String("rule", rule.String()))
+}
+
+// DefaultEvaluatedCallback do something when Rule succeeded.
+func DefaultEvaluatedCallback(rule Rule) {
+	log.Info("Rule evaluated", zap.String("rule", rule.String()))
 }

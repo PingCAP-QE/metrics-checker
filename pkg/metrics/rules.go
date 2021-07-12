@@ -2,24 +2,36 @@ package metrics
 
 import (
 	"fmt"
+	"time"
 )
 
 // Rule represents a bool PromQL expression, returning True means rule satisified.
 //   Send alerts when a rule return true, which is similarly as prometheus
 //   alerting rules.
 type Rule struct {
-	Tag        string `yaml:"tag"`
-	PromQL     string `yaml:"promql"`
-	NotifyFunc NotifyFunc
-	AlertFunc  AlertFunc
+	Name              string `yaml:"tag"`
+	PromQL            string `yaml:"promql"`
+	Interval          time.Duration
+	EvaluatedCallback EvaluatedCallback
+	AlertCallback     AlertCallback
 }
 
-// NotifyFunc do something when Rule failed.
-type NotifyFunc func(rule Rule)
+func BuildRuleWithDefaultCallback(tag string, interval time.Duration, promQL string) Rule {
+	return Rule{
+		Name:              tag,
+		PromQL:            promQL,
+		Interval:          interval,
+		EvaluatedCallback: DefaultEvaluatedCallback,
+		AlertCallback:     DefaultAlertCallback,
+	}
+}
 
-// AlertFunc do something when Rule satifified.
-type AlertFunc func(rule Rule)
+// EvaluatedCallback will be called whenever the PromQL is evaluated.
+type EvaluatedCallback func(rule Rule)
+
+// AlertCallback will be called only the Rule evaluated to truthy.
+type AlertCallback func(rule Rule)
 
 func (r *Rule) String() string {
-	return fmt.Sprintf("Tag: %s; PromQL: %s", r.Tag, r.PromQL)
+	return fmt.Sprintf("Name: %s; PromQL: %s", r.Name, r.PromQL)
 }

@@ -36,16 +36,19 @@ func root(cmd *cobra.Command, args []string) {
 	}
 	log.Info("Start checking metrics", zap.String("prometheus", Flag.prometheusAPIURL))
 
-	for i := range Conf.Rules {
-		Conf.Rules[i].NotifyFunc = NotifyFunction
-		Conf.Rules[i].AlertFunc = AlertFunction
-	}
-
-	metricsChecker, err := metrics.NewChecker(Flag.prometheusAPIURL, Conf.Rules, Conf.Interval)
+	metricsChecker, err := metrics.NewChecker(Flag.prometheusAPIURL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	err = metricsChecker.Run()
+	if metricsChecker == nil {
+		return
+	}
+
+	for _, rule := range Conf.Rules {
+		metricsChecker.AddRule(metrics.BuildRuleWithDefaultCallback(rule.Name, Conf.Interval, rule.PromQL))
+	}
+
+	err = metricsChecker.RunBlocked()
 	if err != nil {
 		log.Fatal("Metrics checker running error", zap.String("err", err.Error()))
 	}
